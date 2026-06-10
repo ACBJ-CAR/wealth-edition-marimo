@@ -117,8 +117,8 @@ def _(df, scored_df):
         df = df.copy()
 
         df["baseline_score"] = (
-            (df["Population per square mile"] * (df["income_per_capita"] * (df["median_age"] - baseline_weights["age_variable"]) * baseline_weights["savings_variable"]) +
-            (df["Population per square mile"] * (((df["housing_units"] * df["hu_pct_occupied"]) * df["occupied_hu_pct_owner_occupied"]) * df["ZILLOW Typical Home Values"]) / df["pop_total"] * baseline_weights["equity_variable"]))
+            (df["population_per_square_mile"] * (df["income_per_capita"] * (df["median_age"] - baseline_weights["age_variable"]) * baseline_weights["savings_variable"]) +
+            (df["population_per_square_mile"] * (((df["housing_units"] * df["hu_pct_occupied"]) * df["occupied_hu_pct_owner_occupied"]) * df["ZILLOW Typical Home Values"]) / df["pop_total"] * baseline_weights["equity_variable"]))
         )
         return df
 
@@ -149,6 +149,25 @@ def _(scored_df):
     )
 
     chart
+    return
+
+
+@app.cell
+def _(scored_df):
+    scored_df
+    return
+
+
+@app.cell
+def _(df):
+
+    df
+    return
+
+
+@app.cell
+def _(scored_df):
+    scored_df["zcta"]
     return
 
 
