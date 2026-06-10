@@ -13,7 +13,7 @@ def _():
 
 @app.cell
 def _(pd):
-    file_path = "data/wealth_data_2023.csv"
+    file_path = "https://raw.githubusercontent.com/ACBJ-CAR/wealth-edition-marimo/refs/heads/main/data/wealth_data_2023.csv"
     df = pd.read_csv(file_path)
     return (df,)
 
