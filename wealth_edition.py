@@ -15,7 +15,7 @@ def _():
 def _(pd):
     def load_data():
         return pd.read_csv(
-            "https://acbj-car.github.io/wealth-edition-marimo/data/wealth_data_2023.csv"
+            "https://raw.githubusercontent.com/ACBJ-CAR/wealth-edition-marimo/refs/heads/main/data/wealth_data_2023.csv"
         )
 
     df = load_data()
