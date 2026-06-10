@@ -76,8 +76,8 @@ def _(df, w_age, w_equity, w_poverty_rate, w_savings):
 
         df = df.copy()
         base_wealth_score = (
-        ((df["Population per square mile"] * (df["income_per_capita"] * (df["median_age"] - weights["age_variable"]) * weights["savings_variable"]) +
-            (df["Population per square mile"] * (((df["housing_units"] * df["hu_pct_occupied"]) * df["occupied_hu_pct_owner_occupied"]) * df["ZILLOW Typical Home Values"]) / df["pop_total"] * weights["equity_variable"])))
+        ((df["population_per_square_mile"] * (df["income_per_capita"] * (df["median_age"] - weights["age_variable"]) * weights["savings_variable"]) +
+            (df["population_per_square_mile"] * (((df["housing_units"] * df["hu_pct_occupied"]) * df["occupied_hu_pct_owner_occupied"]) * df["ZILLOW Typical Home Values"]) / df["pop_total"] * weights["equity_variable"])))
         )
 
         if weights["poverty_variable"] > 0:
