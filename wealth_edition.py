@@ -13,8 +13,12 @@ def _():
 
 @app.cell
 def _(pd):
-    file_path = "https://raw.githubusercontent.com/ACBJ-CAR/wealth-edition-marimo/refs/heads/main/data/wealth_data_2023.csv"
-    df = pd.read_csv(file_path)
+    def load_data():
+        return pd.read_csv(
+            "https://acbj-car.github.io/wealth-edition-marimo/data/wealth_data_2023.csv"
+        )
+
+    df = load_data()
     return (df,)
 
 
@@ -88,7 +92,6 @@ def _(df, w_age, w_equity, w_poverty_rate, w_savings):
 
 
     scored_df, weights = compute_wealth_score(df)
-
     return (scored_df,)
 
 
@@ -97,7 +100,6 @@ def _(mo):
     mo.md("""
     ## And this one shows which ZIPs are changing the most based on adjustments to the sliders
     """)
-
     return
 
 
@@ -113,7 +115,7 @@ def _(df, scored_df):
 
     def baseline_scores(df):
         df = df.copy()
-    
+
         df["baseline_score"] = (
             (df["Population per square mile"] * (df["income_per_capita"] * (df["median_age"] - baseline_weights["age_variable"]) * baseline_weights["savings_variable"]) +
             (df["Population per square mile"] * (((df["housing_units"] * df["hu_pct_occupied"]) * df["occupied_hu_pct_owner_occupied"]) * df["ZILLOW Typical Home Values"]) / df["pop_total"] * baseline_weights["equity_variable"]))
@@ -133,7 +135,6 @@ def _(df, scored_df):
     merged["rank_change"] = merged["baseline_rank"] - merged["rank"]
 
     merged[["zcta", "rank", "cbsa_name", "wealth_score", "rank_change"]].sort_values("rank_change", ascending=False)
-
     return
 
 
@@ -148,7 +149,6 @@ def _(scored_df):
     )
 
     chart
-
     return
 
 
