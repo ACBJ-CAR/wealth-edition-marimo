@@ -152,29 +152,5 @@ def _(scored_df):
     return
 
 
-@app.cell
-def _(scored_df):
-    scored_df
-    return
-
-
-@app.cell
-def _(df):
-
-    df
-    return
-
-
-@app.cell
-def _(scored_df):
-    scored_df["zcta"]
-    return
-
-
-@app.cell
-def _():
-    return
-
-
 if __name__ == "__main__":
     app.run()
