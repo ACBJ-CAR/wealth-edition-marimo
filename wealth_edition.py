@@ -35,6 +35,11 @@ def _(mo):
 def _(mo):
     mo.md("""
     #Adjust your variables here:
+    Baseline variables: <br>
+    Age of savings start: 25<br>
+    Savings rate: 10% (0.1)<br>
+    Average home equity rate: 50% (0.5)<br>
+    Poverty rate included? No (0)
     """)
     return
 
@@ -53,7 +58,7 @@ def _(mo, w_age, w_equity, w_poverty_rate, w_savings):
 @app.cell
 def _(mo):
     mo.md("""
-    ##This table shows how what the final rank and score are based on the above variables
+    ##This table shows what the final rank and score are, as well as the difference in rank and score from the baseline, based on the above variables.
     """)
     return
 
@@ -61,9 +66,16 @@ def _(mo):
 @app.cell
 def _(scored_df):
     scored_df.drop_duplicates(subset="zcta", inplace=True)
-    rank_col = scored_df.pop("rank")
-    scored_df.insert(0, "rank", rank_col)
-    scored_df
+    scored_df["Difference in wealth score"] = scored_df["baseline_score"] - scored_df["wealth_score"]
+    scored_df["Change in rank"] = scored_df["baseline_rank"] - scored_df["rank"]
+
+    scored_df_reordered = scored_df[["zcta", "cbsa_name", "county_name", "state_name", "rank", "baseline_rank", "Change in rank","wealth_score", "baseline_score", "Difference in wealth score", "population_per_square_mile", "income_per_capita", "Median age - V1 x income per capita x V2 (income per capita*(median age-V1)*V2)", "Home equity per capita (housing units*%owner-occupied*median value)*V3", "poverty_rate", "pop_total", "pop_total.1", "area_land_sq_miles", "median_age", "median_age_male", "median_age_female", "pop_total_18_64", "pop_pct_18_64", "race_pct_nh_white", "race_pct_nh_black", "race_pct_nh_amerind_alaskan", "race_pct_nh_asian", "race_pct_nh_nhpi", "race_pct_nh_other", "race_pct_nh_two_plus", "race_pct_hispanic", "income_per_capita.1", "income_median_hh", "mean_travel_time_to_work", "housing_units", "hu_pct_occupied", "occupied_hu_pct_owner_occupied", "ZILLOW Typical Home Values", "educ_pct_hs_grad", "educ_pct_bachelors", "educ_pct_postgrad", "veteran_pct"]]
+
+    # scored_df.insert(0, "rank", rank_col)
+    # scored_df.insert(5, "New wealth score", new_wealth_col)
+    # scored_df.insert(6, "Old wealth score", old_wealth_col)
+
+    scored_df_reordered
     return
 
 
@@ -76,6 +88,13 @@ def _(df, w_age, w_equity, w_poverty_rate, w_savings):
             "equity_variable": w_equity.value,
             "poverty_variable": w_poverty_rate.value,
         }
+
+        baseline_weights = {
+        "age_variable": 25,
+        "savings_variable": 0.10,
+        "equity_variable": 0.50,
+        "poverty_variable": 0,
+    }
 
         df = df.copy()
         base_wealth_score = (
@@ -91,56 +110,19 @@ def _(df, w_age, w_equity, w_poverty_rate, w_savings):
             df["wealth_score"] = base_wealth_score
 
         df["rank"] = df["wealth_score"].rank(ascending=False)
+    
+        df["baseline_score"] = (
+            (df["population_per_square_mile"] * (df["income_per_capita"] * (df["median_age"] - baseline_weights["age_variable"]) * baseline_weights["savings_variable"]) +
+             (df["population_per_square_mile"] * (((df["housing_units"] * df["hu_pct_occupied"]) * df["occupied_hu_pct_owner_occupied"]) * df["ZILLOW Typical Home Values"]) / df["pop_total"] * baseline_weights["equity_variable"]))
+        )
+
+        df["baseline_rank"] = df["baseline_score"].rank(ascending=False)
+
         return df.sort_values("wealth_score", ascending=False), weights
 
 
     scored_df, weights = compute_wealth_score(df)
     return (scored_df,)
-
-
-@app.cell
-def _(mo):
-    mo.md("""
-    ## And this one shows which ZIPs are changing the most based on adjustments to the sliders
-    """)
-    return
-
-
-@app.cell
-def _(df, scored_df):
-    # only compute once
-    baseline_weights = {
-        "age_variable": 25,
-        "savings_variable": 0.10,
-        "equity_variable": 0.50,
-        "poverty_variable": 0,
-    }
-
-    def baseline_scores(df):
-        df = df.copy()
-
-        df["baseline_score"] = (
-            (df["population_per_square_mile"] * (df["income_per_capita"] * (df["median_age"] - baseline_weights["age_variable"]) * baseline_weights["savings_variable"]) +
-            (df["population_per_square_mile"] * (((df["housing_units"] * df["hu_pct_occupied"]) * df["occupied_hu_pct_owner_occupied"]) * df["ZILLOW Typical Home Values"]) / df["pop_total"] * baseline_weights["equity_variable"]))
-        )
-        return df
-
-
-    df_base = baseline_scores(df)
-
-    merged = scored_df.merge(
-        df_base[["zcta", "baseline_score"]], on="zcta"
-    )
-
-    merged["rank"] = merged["wealth_score"].rank(ascending=False)
-    merged["baseline_rank"] = merged["baseline_score"].rank(ascending=False)
-
-    merged["rank_change"] = merged["baseline_rank"] - merged["rank"]
-
-    merged.drop_duplicates(subset="zcta", inplace=True)
-
-    merged[["zcta", "rank", "cbsa_name", "wealth_score", "rank_change"]].sort_values("rank_change", ascending=False)
-    return
 
 
 @app.cell
@@ -154,6 +136,11 @@ def _(scored_df):
     )
 
     chart
+    return
+
+
+@app.cell
+def _():
     return
 
 
