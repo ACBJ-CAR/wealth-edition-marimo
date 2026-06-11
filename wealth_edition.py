@@ -61,6 +61,8 @@ def _(mo):
 @app.cell
 def _(scored_df):
     scored_df.drop_duplicates(subset="zcta", inplace=True)
+    rank_col = scored_df.pop("rank")
+    scored_df.insert(0, "rank", rank_col)
     scored_df
     return
 
