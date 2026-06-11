@@ -25,8 +25,8 @@ def _(pd):
 @app.cell
 def _(mo):
     w_age = mo.ui.slider(0, 100, value=25, step=1, label="Age variable", show_value=True)
-    w_savings = mo.ui.slider(0, 1, value=0.10, step=0.1, label="Savings percentage variable", show_value=True)
-    w_equity = mo.ui.slider(0, 1, value=0.50, step=0.1, label="Home equity percentage variable", show_value=True)
+    w_savings = mo.ui.slider(0, 1, value=0.10, step=0.05, label="Savings percentage variable", show_value=True)
+    w_equity = mo.ui.slider(0, 1, value=0.50, step=0.05, label="Home equity percentage variable", show_value=True)
     w_poverty_rate = mo.ui.slider(0, 1, value=0, step=1, label="Poverty rate yes/no", show_value=True)
     return w_age, w_equity, w_poverty_rate, w_savings
 
