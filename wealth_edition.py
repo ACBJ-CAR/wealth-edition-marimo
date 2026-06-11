@@ -60,7 +60,8 @@ def _(mo):
 
 @app.cell
 def _(scored_df):
-    scored_df[["zcta", "cbsa_name", "rank", "wealth_score", ]]
+    scored_df.drop_duplicates(subset="zcta", inplace=True)
+    scored_df
     return
 
 
@@ -133,6 +134,8 @@ def _(df, scored_df):
     merged["baseline_rank"] = merged["baseline_score"].rank(ascending=False)
 
     merged["rank_change"] = merged["baseline_rank"] - merged["rank"]
+
+    merged.drop_duplicates(subset="zcta", inplace=True)
 
     merged[["zcta", "rank", "cbsa_name", "wealth_score", "rank_change"]].sort_values("rank_change", ascending=False)
     return
