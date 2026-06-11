@@ -70,6 +70,7 @@ def _(scored_df):
     scored_df["Change in rank"] = scored_df["baseline_rank"] - scored_df["rank"]
 
     scored_df_reordered = scored_df[["zcta", "cbsa_name", "county_name", "state_name", "rank", "baseline_rank", "Change in rank","wealth_score", "baseline_score", "Difference in wealth score", "population_per_square_mile", "income_per_capita", "Median age - V1 x income per capita x V2 (income per capita*(median age-V1)*V2)", "Home equity per capita (housing units*%owner-occupied*median value)*V3", "poverty_rate", "pop_total", "pop_total.1", "area_land_sq_miles", "median_age", "median_age_male", "median_age_female", "pop_total_18_64", "pop_pct_18_64", "race_pct_nh_white", "race_pct_nh_black", "race_pct_nh_amerind_alaskan", "race_pct_nh_asian", "race_pct_nh_nhpi", "race_pct_nh_other", "race_pct_nh_two_plus", "race_pct_hispanic", "income_per_capita.1", "income_median_hh", "mean_travel_time_to_work", "housing_units", "hu_pct_occupied", "occupied_hu_pct_owner_occupied", "ZILLOW Typical Home Values", "educ_pct_hs_grad", "educ_pct_bachelors", "educ_pct_postgrad", "veteran_pct"]]
+    scored_df_reordered.rename(columns={"rank": "new_rank"}, inplace=True)
 
     # scored_df.insert(0, "rank", rank_col)
     # scored_df.insert(5, "New wealth score", new_wealth_col)
@@ -110,7 +111,7 @@ def _(df, w_age, w_equity, w_poverty_rate, w_savings):
             df["wealth_score"] = base_wealth_score
 
         df["rank"] = df["wealth_score"].rank(ascending=False)
-    
+
         df["baseline_score"] = (
             (df["population_per_square_mile"] * (df["income_per_capita"] * (df["median_age"] - baseline_weights["age_variable"]) * baseline_weights["savings_variable"]) +
              (df["population_per_square_mile"] * (((df["housing_units"] * df["hu_pct_occupied"]) * df["occupied_hu_pct_owner_occupied"]) * df["ZILLOW Typical Home Values"]) / df["pop_total"] * baseline_weights["equity_variable"]))
@@ -118,7 +119,7 @@ def _(df, w_age, w_equity, w_poverty_rate, w_savings):
 
         df["baseline_rank"] = df["baseline_score"].rank(ascending=False)
 
-        return df.sort_values("wealth_score", ascending=False), weights
+        return df.sort_values("rank", ascending=True), weights
 
 
     scored_df, weights = compute_wealth_score(df)
